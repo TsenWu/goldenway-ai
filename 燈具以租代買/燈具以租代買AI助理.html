@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>金鍏電子 - AI 燈具以租代買專案顧問</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet" />
+  
+  <style>
+    /* Premium Slate Light Glassmorphism Theme CSS */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+      color: #334155;
+      font-family: 'Noto Sans TC', 'Outfit', sans-serif;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    /* Main Container */
+    .gw-chat-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    /* Header styling */
+    .gw-ai-header {
+      background-color: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(16px) saturate(120%);
+      -webkit-backdrop-filter: blur(16px) saturate(120%);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .gw-ai-header-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 0.03em;
+    }
+    .gw-ai-fab-sparkle {
+      color: #ca8a04;
+      display: flex;
+      align-items: center;
+      animation: gw-ai-spin 6s infinite linear;
+    }
+    .gw-ai-header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .gw-ai-icon-btn {
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s;
+      border-radius: 8px;
+    }
+    .gw-ai-icon-btn:hover {
+      color: #0f172a;
+      background-color: rgba(15, 23, 42, 0.05);
+    }
+    .gw-ai-icon-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Mode Status Badge */
+    .gw-ai-mode-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .gw-ai-mode-badge.local {
+      background-color: rgba(37, 99, 235, 0.08);
+      color: #2563eb;
+      border: 1px solid rgba(37, 99, 235, 0.2);
+    }
+    .gw-ai-mode-badge.live {
+      background-color: rgba(5, 150, 105, 0.08);
+      color: #059669;
+      border: 1px solid rgba(5, 150, 105, 0.2);
+    }
+
+    /* Message area container */
+    .gw-ai-msg-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      scroll-behavior: smooth;
+      background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.06), transparent 60%);
+      box-sizing: border-box;
+    }
+    
+    /* Scrollbar */
+    .gw-ai-msg-area::-webkit-scrollbar {
+      width: 5px;
+    }
+    .gw-ai-msg-area::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .gw-ai-msg-area::-webkit-scrollbar-thumb {
+      background: rgba(15, 23, 42, 0.1);
+      border-radius: 99px;
+    }
+    .gw-ai-msg-area::-webkit-scrollbar-thumb:hover {
+      background: rgba(15, 23, 42, 0.2);
+    }
+
+    /* Message Bubbles */
+    .gw-ai-msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 90%;
+      box-sizing: border-box;
+    }
+    .gw-ai-msg.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+    .gw-ai-msg.bot {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+    .gw-ai-msg-bubble {
+      padding: 14px 18px;
+      border-radius: 16px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      word-break: break-word;
+      box-sizing: border-box;
+    }
+    .gw-ai-msg.user .gw-ai-msg-bubble {
+      background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+      color: #ffffff;
+      border-top-right-radius: 4px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.15);
+    }
+    .gw-ai-msg.bot .gw-ai-msg-bubble {
+      background-color: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #334155;
+      border-top-left-radius: 4px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    /* AI Message Card (Chrome Gemini style summary output) */
+    .gw-ai-message-card {
+      background-color: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 16px;
+      padding: 20px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: #334155;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      box-sizing: border-box;
+      width: 100%;
+    }
+    .gw-ai-summary-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15.5px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    }
+    .gw-ai-sparkle-icon {
+      color: #ca8a04;
+      display: flex;
+      align-items: center;
+    }
+    .gw-ai-summary-section {
+      margin-bottom: 16px;
+    }
+    .gw-ai-summary-section:last-child {
+      margin-bottom: 0;
+    }
+    .gw-ai-section-title {
+      font-weight: 700;
+      color: #b45309;
+      margin-bottom: 6px;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .gw-ai-section-content {
+      color: #475569;
+      text-align: justify;
+    }
+    .gw-ai-bullet-list {
+      margin: 0;
+      padding-left: 18px;
+      color: #475569;
+    }
+    .gw-ai-bullet-list li {
+      margin-bottom: 8px;
+      text-align: justify;
+    }
+    .gw-ai-bullet-list li strong {
+      color: #0f172a;
+    }
+
+    /* Typing Indicator Animation */
+    .gw-ai-typing-indicator {
+      display: flex;
+      gap: 5px;
+      padding: 6px 10px;
+      align-items: center;
+    }
+    .gw-ai-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #94a3b8;
+      border-radius: 50%;
+      animation: gw-ai-bounce 1.4s infinite ease-in-out both;
+    }
+    .gw-ai-dot:nth-child(1) { animation-delay: -0.32s; }
+    .gw-ai-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes gw-ai-bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1.0); }
+    }
+
+    /* Suggestions Area */
+    .gw-ai-suggestions-box {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-sizing: border-box;
+    }
+    .gw-ai-suggestion-title {
+      font-size: 12.5px;
+      color: #64748b;
+      font-weight: 600;
+      margin-left: 2px;
+    }
+    .gw-ai-chips-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    @media (min-width: 480px) {
+      .gw-ai-chips-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+    }
+    
+    .gw-ai-suggestion-chip {
+      background-color: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      color: #475569;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      text-align: left;
+      font-family: inherit;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+    .gw-ai-suggestion-chip:hover {
+      background-color: rgba(202, 138, 4, 0.06);
+      border-color: rgba(202, 138, 4, 0.3);
+      color: #ca8a04;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(202, 138, 4, 0.08);
+    }
+    
+    /* Reset Button */
+    .gw-ai-reset-box {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 5px;
+    }
+    .gw-ai-reset-btn {
+      background-color: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      color: #475569;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .gw-ai-reset-btn:hover {
+      background-color: rgba(15, 23, 42, 0.04);
+      color: #0f172a;
+    }
+
+    /* Input Footer */
+    .gw-ai-input-panel {
+      padding: 16px 20px 24px 20px;
+      background-color: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(15, 23, 42, 0.06);
+      flex-shrink: 0;
+      box-sizing: border-box;
+      z-index: 10;
+    }
+    .gw-ai-input-container {
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      padding: 6px 16px;
+      transition: all 0.25s;
+      box-sizing: border-box;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    }
+    .gw-ai-input-container:focus-within {
+      border-color: #ca8a04;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(202, 138, 4, 0.12), 0 4px 16px rgba(0, 0, 0, 0.04);
+    }
+    .gw-ai-chat-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #0f172a;
+      font-family: inherit;
+      font-size: 14.5px;
+      padding: 8px 0;
+      outline: none;
+    }
+    .gw-ai-chat-input::placeholder {
+      color: #94a3b8;
+    }
+
+    /* Settings Overlay Styling */
+    .gw-ai-settings-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 10005;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      padding: 30px;
+      box-sizing: border-box;
+      animation: gw-ai-fade-in 0.2s ease-out;
+    }
+    .gw-ai-settings-overlay.open {
+      display: flex;
+    }
+    .gw-ai-settings-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .gw-ai-settings-desc {
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .gw-ai-settings-input {
+      width: 100%;
+      background-color: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.15);
+      color: #0f172a;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      box-sizing: border-box;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    .gw-ai-settings-input:focus {
+      border-color: #ca8a04;
+    }
+    .gw-ai-settings-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .gw-ai-btn {
+      flex: 1;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .gw-ai-btn.primary {
+      background-color: #ca8a04;
+      color: #ffffff;
+    }
+    .gw-ai-btn.primary:hover {
+      background-color: #b45309;
+    }
+    .gw-ai-btn.secondary {
+      background-color: rgba(15, 23, 42, 0.05);
+      color: #334155;
+    }
+    .gw-ai-btn.secondary:hover {
+      background-color: rgba(15, 23, 42, 0.08);
+    }
+
+    @keyframes gw-ai-spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes gw-ai-fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Hide dev tools by default for regular users */
+    #gw-ai-status-badge, #gw-ai-settings-toggle {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="gw-chat-container">
+    <!-- Header -->
+    <header class="gw-ai-header">
+      <div class="gw-ai-header-title">
+        <span class="gw-ai-fab-sparkle">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+          </svg>
+        </span>
+        <span>文章摘要：金鍏電子照明租賃</span>
+      </div>
+      <div class="gw-ai-header-controls">
+        <span id="gw-ai-status-badge" class="gw-ai-mode-badge local">
+          🔵 本地問答
+        </span>
+        <button class="gw-ai-icon-btn" id="gw-ai-settings-toggle" title="API 金鑰設定">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Message list -->
+    <main class="gw-ai-msg-area" id="gw-ai-chat-area"></main>
+
+    <!-- Chat input area footer -->
+    <footer class="gw-ai-input-panel">
+      <div class="gw-ai-input-container">
+        <input type="text" class="gw-ai-chat-input" id="gw-ai-chat-input" placeholder="輸入即可詢問相關問題..." autocomplete="off">
+        <button class="gw-ai-icon-btn" id="gw-ai-send" title="傳送" style="color: #ca8a04; margin-left: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m22 2-7 20-4-9-9-4Z"/>
+            <path d="M22 2 11 13"/>
+          </svg>
+        </button>
+      </div>
+    </footer>
+
+    <!-- Settings Overlay -->
+    <div class="gw-ai-settings-overlay" id="gw-ai-settings-panel">
+      <div class="gw-ai-settings-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#ca8a04;">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>Gemini Live API 設定</span>
+      </div>
+      <p class="gw-ai-settings-desc">
+        輸入您的 <strong>Google Gemini API 金鑰</strong> 來解鎖完整的即時 AI 智能對答！金鑰將直接從瀏覽器發送請求，完全安全存儲於您本地瀏覽器 (localStorage) 中。
+        <br><br>
+        <a href="https://aistudio.google.com/" target="_blank" style="color: #2563eb; text-decoration: underline;">👉 按此到 Google AI Studio 免費申請金鑰</a>
+      </p>
+      <input type="password" class="gw-ai-settings-input" id="gw-ai-key-input" placeholder="貼上您的 API 金鑰 (AIzaSy...)" value="">
+      <div class="gw-ai-settings-buttons">
+        <button class="gw-ai-btn secondary" id="gw-ai-settings-cancel">取消</button>
+        <button class="gw-ai-btn primary" id="gw-ai-settings-save">儲存設定</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration & Q&A Logic inside a single file
+    (function () {
+      const CONFIG = {
+        defaultGeminiApiKey: '',
+        storageKey: 'gw_ai_gemini_api_key'
+      };
+
+      // Premium SVG link icon used across the interface
+      const linkIconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 2px; display: inline-block; vertical-align: middle;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+
+      // Preloaded FAQ Q&A Database
+      const FAQ_DATABASE = [
+        {
+          keywords: ['費用', '算', '租金', '多便宜', '省多少', '試算', '方案', '價格', '便宜'],
+          title: '💰 節電與財務效益說明',
+          content: `金鍏「以租代買」專案能為您的企業帶來顯著的財務與稅務優勢：
+<br><br>
+1. <strong>0 元建置費用</strong>：企業不需要編列高額初期建置預算（CAPEX），包含燈具採購、配線調整與施工全額由金鍏出資。<br>
+2. <strong>租金全額折抵</strong>：租金列為營運費用（OPEX）申報，可全額扣抵營業稅與營所稅，優化企業財務報表。<br>
+3. <strong>提升照明效能</strong>：更換專利高效 LED 燈具後，可顯著提升照明發光效率與降低照明用電量。<br>
+4. <strong>5 年方案更劃算</strong>：簽約 5 年加碼送 1 年（共使用 6 年），平均年費用降低約 <strong>16.67%</strong>，每盞每日租金平攤僅需 <strong>NT$ 1.08</strong> 元！`
+        },
+        {
+          keywords: ['保固', '維修', '壞了', '故障', '壞掉', '換燈', '售後', '保修', '燈泡'],
+          title: '🛠️ 全期保固與維護承諾',
+          content: `在合約期間，我們提供完整的後續維護保固支援：
+<br><br>
+1. <strong>全期保固維護</strong>：合約期間內，舉凡燈具光衰、零件損壞、變壓器故障，皆由金鍏團隊<strong>依約提供檢修與更新服務</strong>。<br>
+2. <strong>快速響應服務</strong>：收到故障報修後，我們將<strong>儘速安排專員處理</strong>，確保您的辦公或廠區照明正常，不影響營運。<br>
+3. <strong>保固範圍免材料費</strong>：保固約定範圍內的燈具耗損，企業無需負擔額外的耗材與施工費用。`
+        },
+        {
+          keywords: ['申請', '流程', '平面圖', '現場', '怎麼申請', '照度', '模擬', '評估', '規劃'],
+          title: '📝 專案評估申請流程',
+          content: `專案評估申請流程非常簡單：
+<br><br>
+1. <strong>線上提交申請</strong>：在網頁表單中填寫聯絡資料與場地坪數概況。<br>
+2. <strong>提供案場平面圖（最推薦）</strong>：若您能提供平面圖與現場照片，我們的工程師可直接在 <strong>DIALux 軟體中進行 3D 照度模擬</strong>，設計最適合的配光與照度配置。沒有平面圖的話，我們也會協助安排專員至現場勘查。<br>
+3. <strong>專人對接聯繫</strong>：我們的專案業務人員將主動與您聯繫，協助後續照明照度評估規劃。<br>
+4. <strong>方案簽約與進場施工</strong>：確認方案合約後，以最短時間進場安裝。`
+        },
+        {
+          keywords: ['台糖', '國營事業', '案例', '實績', '合作', '台灣糖業'],
+          title: '🏢 台糖指標案例分享',
+          content: `指標國營事業（台糖）採用照明租賃模式進行全面綠能照明升級，其成效極為卓越（此為業界採用照明租賃模式之指標案例）：
+<br><br>
+- <strong>專案內容</strong>：全面汰換旗下 13 個單位的老舊螢光燈具 (T8/T5)，改採 LED 租賃模式。<br>
+- <strong>省電數據</strong>：每年成功為客戶<strong>節電 133 萬度</strong>。<br>
+- <strong>ESG 減碳指標</strong>：每年**減碳達 700 公噸 (70 萬公斤)**，顯著提升客戶的 ESG 循環經濟績效！`
+        },
+        {
+          keywords: ['規格', '認證', 'CNS', '色溫', '黃光', '白光', '閃爍', '藍光', '防眩'],
+          title: '💡 專利燈具規格與安全認證',
+          content: `金鍏電子所配置的 LED 租賃燈具均為頂級專利規格，非一般廉價燈具：
+<br><br>
+1. <strong>多款色溫彈性</strong>：提供 <strong>4000K (暖白光)</strong> 與 <strong>5700K (自然白光)</strong> 兩款高質感色溫，滿足辦公與廠區之需求。<br>
+2. <strong>通過國家 CNS 15592 認證</strong>：全系列均為無藍光危害檢測通過產品，維護員工視力健康。<br>
+3. <strong>極低電流漣波 (< 3%)</strong>：電流輸出極度穩定，實現<strong>完全無頻閃</strong>、防眩光，能大幅降低長時間辦公的眼睛疲勞。<br>
+4. <strong>高光效</strong>：發光效率達 160 lm/W，領先業界，用最少電力達到最高照度。`
+        }
+      ];
+
+      // Google Gemini API Request Function
+      const queryGeminiAPI = async (apiKey, prompt, chatHistory) => {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        const contents = [];
+        
+        // Push recent chat history (exclude summary card type)
+        const recentHistory = chatHistory.slice(-8);
+        recentHistory.forEach(msg => {
+          if (msg.type === 'summary') return;
+          contents.push({
+            role: msg.sender === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.text }]
+          });
+        });
+
+        // Add current prompt
+        contents.push({
+          role: 'user',
+          parts: [{ text: prompt }]
+        });
+
+        const systemInstruction = {
+          parts: [{
+            text: `你是一位代表金鍏電子（Goldenway）的專業「綠能照明以租代買專案」AI 顧問助理。
+請依據以下網頁提供之背景知識，用親切、專業、客氣的口氣，並以「繁體中文（台灣習慣用語）」來回答使用者的問題。
+如果使用者的提問超出了網頁內容，請在做適當的基本解說後，溫柔地引導他們填寫網頁上的「線上專案評估申請表單」以便安排專案業務人員與他們對接聯繫與規劃諮詢。
+
+【網頁主要背景知識】
+1. 服務名稱：金鍏電子「企業綠色照明以租代買專案」 (LED 綠色照明租賃方案)。
+2. 核心商模：
+   - 零初期建置費用 (Zero CAPEX)：初期買燈、線路重整與進場施工安裝費用全由金鍏出資，將負擔化為可全額抵稅的「營運費用 (OPEX)」。
+   - 合約期間保固與維護承諾：燈具故障、零件損壞、光衰，金鍏承諾提供檢修與更新服務，協助企業降低維護負擔。
+   - 節電效益高達 60% 以上。
+   - 完美對接 ESG 指標，提供完整節電度數與碳排放減量數據。
+3. 租賃方案比較 (以 50~100 坪廠辦做估算，每坪估算需 1 盞 LED 燈)：
+   - 1 年租期：僅供對比計算基準，無開放承租。每盞日均 1.30 元。
+   - 3 年租期：基本最短合約，每盞日均 1.30 元.
+   - 5 年租期：簽約 5 年加碼送 1 年（共使用 6 年），平均年租金現省 16.67%，每盞日均租金降至 1.08 元。
+4. 業界指標案例：國營事業台糖採用照明租賃模式全面汰換旗下 13 個單位舊燈具，每年節電 133 萬度，10年長效營運降低照明用電耗損，實現每年減碳 700 公噸（70 萬公斤），成效斐然。
+5. 燈具規格：提供 4000K (暖白光) 與 5700K (自然白光) 兩款高質感色溫，全系列通過 CNS15592 無藍光危害認證，電流漣波 < 3%（無頻閃、防眩光，能減緩辦公疲勞），發光效率高達 160 lm/W。
+6. 申請評估條件：提供「案場平面圖」與「現況照片」能讓工程師在 DIALux 3D 照度模擬中計算最佳燈具配置，大幅加快審查與提案進度。
+
+如果使用者詢問的內容與照明、本租賃專案、金鍏電子無任何關聯，請客氣地告知您為金鍏電子的 AI 助理，僅提供綠色照明相關諮詢。`
+          }]
+        };
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            contents: contents,
+            systemInstruction: systemInstruction,
+            generationConfig: {
+              maxOutputTokens: 800,
+              temperature: 0.7
+            }
+          })
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error?.message || '呼叫 API 發生錯誤');
+        }
+
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+      };
+
+      // Summary html block
+      const getSummaryHTML = () => {
+        return `
+          <div class="gw-ai-message-card">
+            <div class="gw-ai-summary-header">
+              <span class="gw-ai-sparkle-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                </svg>
+              </span>
+              <strong>金鍏電子「燈具以租代買」服務摘要</strong>
+            </div>
+            
+            <div class="gw-ai-summary-section">
+              <div class="gw-ai-section-title">💡 核心一句話</div>
+              <div class="gw-ai-section-content">
+                金鍏電子提供企業 LED 照明租賃方案，透過「零資本支出」模式協助企業節能減碳，並以全期維護服務達成財務與永續目標。
+              </div>
+            </div>
+
+            <div class="gw-ai-summary-section">
+              <div class="gw-ai-section-title">📌 關鍵要點</div>
+              <ul class="gw-ai-bullet-list">
+                <li><strong>輕資產營運 (Zero CAPEX)</strong>：免除一次性高額設備採購，將照明採購負擔轉化為可全額抵稅的營運費用，優化財務報表。</li>
+                <li><strong>全壽命期保障</strong>：租賃期間由金鍏團隊依約負責維修保固與技術支援，協助企業降低維護成本與人力負擔。</li>
+                <li><strong>科學化環境規劃</strong>：導入 <a href="https://www.goldenwayled.com/product_d.php?lang=tw&tb=1&id=1126" style="color: #2563eb; text-decoration: underline;" target="_blank">DIALux 專業照度模擬${linkIconSvg}</a>，精準配置燈具數量，避免照度不足與光污染，確保符合 CNS 標準。</li>
+                <li><strong>ESG 永續價值</strong>：協助企業簡化範疇二碳排申報，汰換高效 LED 技術降低用電量，達成綠色循環經濟指標。</li>
+              </ul>
+            </div>
+
+            <div class="gw-ai-summary-section">
+              <div class="gw-ai-section-title">📊 重要數據與案例</div>
+              <ul class="gw-ai-bullet-list">
+                <li><strong>財務節省效益</strong>：五年期租金方案（簽 5 年送 1 年）較基準費用降低約 16.67%，每日每盞平均租金降至 NT$ 1.08。</li>
+                <li><strong>台糖指標案例</strong>：國營事業台糖採用照明租賃模式全面汰換旗下 13 個單位舊燈具，每年節電 133 萬度，並實現每年減碳 700 公噸。</li>
+                <li><strong>產品規格</strong>：提供 4000K (暖白光) 與 5700K (自然白光) 兩款彈性，全系列通過 CNS15592 無藍光危害，且輸出電流漣波控制於 &lt; 3%。</li>
+              </ul>
+            </div>
+
+            <div class="gw-ai-summary-section">
+              <div class="gw-ai-section-title">🚀 行動建議</div>
+              <div class="gw-ai-section-content">
+                若您的辦公室或廠辦有照明升級需求，建議先準備「案場平面圖」與「預計規劃坪數」，透過官方 <a href="https://www.goldenwayled.com/product_d.php?lang=tw&tb=1&id=1126" style="color: #2563eb; text-decoration: underline;" target="_blank">填寫專案表單${linkIconSvg}</a> 申請專業照度模擬評估。此外，審視合約時應重點確認「退租條款」與「維護響應速度」，以確保在節能減碳的同時，維持企業營運的靈活性。
+              </div>
+            </div>
+          </div>
+        `;
+      };
+
+      class GWAIAssistant {
+        constructor() {
+          this.apiKey = localStorage.getItem(CONFIG.storageKey) || CONFIG.defaultGeminiApiKey || '';
+          this.chatHistory = [];
+          this.isGenerating = false;
+          
+          this.init();
+        }
+
+        init() {
+          this.cacheElements();
+          this.checkDevMode();
+          this.bindEvents();
+          this.resetToSummary();
+          this.updateStatusBadge();
+        }
+
+        checkDevMode() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const isDev = urlParams.get('dev') === 'true' || urlParams.get('admin') === 'true';
+          if (isDev) {
+            this.statusBadge.style.display = 'inline-flex';
+            this.settingsBtn.style.display = 'flex';
+          }
+        }
+
+        cacheElements() {
+          this.chatArea = document.getElementById('gw-ai-chat-area');
+          this.chatInput = document.getElementById('gw-ai-chat-input');
+          this.sendBtn = document.getElementById('gw-ai-send');
+          this.settingsBtn = document.getElementById('gw-ai-settings-toggle');
+          this.settingsPanel = document.getElementById('gw-ai-settings-panel');
+          this.keyInput = document.getElementById('gw-ai-key-input');
+          this.statusBadge = document.getElementById('gw-ai-status-badge');
+          
+          this.keyInput.value = this.apiKey;
+        }
+
+        bindEvents() {
+          // Send messages
+          this.sendBtn.addEventListener('click', () => this.handleUserSend());
+          this.chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.handleUserSend();
+          });
+
+          // Toggle settings panel
+          this.settingsBtn.addEventListener('click', () => {
+            this.settingsPanel.classList.toggle('open');
+          });
+          document.getElementById('gw-ai-settings-cancel').addEventListener('click', () => {
+            this.settingsPanel.classList.remove('open');
+          });
+          document.getElementById('gw-ai-settings-save').addEventListener('click', () => {
+            this.saveApiKey();
+          });
+        }
+
+        updateStatusBadge() {
+          if (this.apiKey) {
+            this.statusBadge.textContent = '🔴 智慧對話';
+            this.statusBadge.className = 'gw-ai-mode-badge live';
+          } else {
+            this.statusBadge.textContent = '🔵 本地問答';
+            this.statusBadge.className = 'gw-ai-mode-badge local';
+          }
+        }
+
+        saveApiKey() {
+          const val = this.keyInput.value.trim();
+          if (val) {
+            this.apiKey = val;
+            localStorage.setItem(CONFIG.storageKey, val);
+          } else {
+            this.apiKey = '';
+            localStorage.removeItem(CONFIG.storageKey);
+          }
+          this.updateStatusBadge();
+          this.settingsPanel.classList.remove('open');
+          this.addSystemNotice(val ? '已開啟實時 Gemini AI 對話模式！' : '已切換回免 API 本地問答模式。');
+        }
+
+        resetToSummary() {
+          this.chatArea.innerHTML = '';
+          this.chatHistory = [];
+          this.addBotMessage(getSummaryHTML(), 'summary');
+          this.addSuggestionChips();
+        }
+
+        addSystemNotice(text) {
+          const notice = document.createElement('div');
+          notice.style.cssText = 'align-self: center; font-size: 12px; color: #64748b; margin: 10px 0; background: rgba(15, 23, 42, 0.03); padding: 4px 12px; border-radius: 4px;';
+          notice.textContent = text;
+          this.chatArea.appendChild(notice);
+          this.scrollToBottom();
+        }
+
+        addBotMessage(htmlContent, type = 'text') {
+          const msgDiv = document.createElement('div');
+          msgDiv.className = 'gw-ai-msg bot';
+          if (type === 'summary') {
+            msgDiv.innerHTML = htmlContent;
+            msgDiv.style.maxWidth = '100%';
+          } else {
+            msgDiv.innerHTML = `<div class="gw-ai-msg-bubble">${htmlContent}</div>`;
+          }
+          this.chatArea.appendChild(msgDiv);
+          this.chatHistory.push({ sender: 'bot', text: htmlContent, type: type });
+          this.scrollToBottom();
+        }
+
+        addUserMessage(text) {
+          const msgDiv = document.createElement('div');
+          msgDiv.className = 'gw-ai-msg user';
+          msgDiv.innerHTML = `<div class="gw-ai-msg-bubble">${this.escapeHTML(text)}</div>`;
+          this.chatArea.appendChild(msgDiv);
+          this.chatHistory.push({ sender: 'user', text: text });
+          this.scrollToBottom();
+        }
+
+        addSuggestionChips() {
+          const oldBox = this.chatArea.querySelector('.gw-ai-suggestions-box');
+          if (oldBox) oldBox.remove();
+
+          const container = document.createElement('div');
+          container.className = 'gw-ai-suggestions-box';
+          container.innerHTML = `
+            <div class="gw-ai-suggestion-title">💡 熱門諮詢問題推薦：</div>
+            <div class="gw-ai-chips-list">
+              <button class="gw-ai-suggestion-chip" data-question="這套方案能為企業帶來哪些財務與稅務效益？">💰 專案有何財務優勢？</button>
+              <button class="gw-ai-suggestion-chip" data-question="租賃期間若燈具壞掉，維修如何進行與計費？">🛠️ 故障維修怎麼算？</button>
+              <button class="gw-ai-suggestion-chip" data-question="申請照度模擬評估需要提供什麼資料？">📝 照度模擬需要什麼？</button>
+              <button class="gw-ai-suggestion-chip" data-question="能分享台糖案例的成效數據嗎？">🏢 台糖案例成效？</button>
+            </div>
+          `;
+
+          container.querySelectorAll('.gw-ai-suggestion-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+              const question = chip.getAttribute('data-question');
+              this.sendQuestion(question);
+            });
+          });
+
+          this.chatArea.appendChild(container);
+          this.scrollToBottom();
+        }
+
+        addResetButton() {
+          if (this.chatArea.querySelector('.gw-ai-reset-box')) return;
+          const resetBox = document.createElement('div');
+          resetBox.className = 'gw-ai-reset-box';
+          resetBox.innerHTML = `
+            <button class="gw-ai-reset-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              重新整理返回摘要
+            </button>
+          `;
+          resetBox.querySelector('.gw-ai-reset-btn').addEventListener('click', () => this.resetToSummary());
+          this.chatArea.appendChild(resetBox);
+          this.scrollToBottom();
+        }
+
+        showTypingIndicator() {
+          this.typingIndicator = document.createElement('div');
+          this.typingIndicator.className = 'gw-ai-msg bot';
+          this.typingIndicator.innerHTML = `
+            <div class="gw-ai-msg-bubble" style="padding: 10px 14px;">
+              <div class="gw-ai-typing-indicator">
+                <div class="gw-ai-dot"></div>
+                <div class="gw-ai-dot"></div>
+                <div class="gw-ai-dot"></div>
+              </div>
+            </div>
+          `;
+          this.chatArea.appendChild(this.typingIndicator);
+          this.scrollToBottom();
+        }
+
+        hideTypingIndicator() {
+          if (this.typingIndicator) {
+            this.typingIndicator.remove();
+            this.typingIndicator = null;
+          }
+        }
+
+        scrollToBottom() {
+          this.chatArea.scrollTop = this.chatArea.scrollHeight;
+        }
+
+        escapeHTML(text) {
+          return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
+
+        handleUserSend() {
+          const val = this.chatInput.value.trim();
+          if (!val) return;
+
+          // Secret developer override commands
+          const lowerVal = val.toLowerCase();
+          if (lowerVal === '/dev' || lowerVal === '/settings' || lowerVal === 'admin123') {
+            this.chatInput.value = '';
+            this.statusBadge.style.display = 'inline-flex';
+            this.settingsBtn.style.display = 'flex';
+            this.settingsPanel.classList.add('open');
+            this.addSystemNotice('已啟動開發者設定模式！');
+            return;
+          }
+
+          if (this.isGenerating) return;
+          this.chatInput.value = '';
+          this.sendQuestion(val);
+        }
+
+        async sendQuestion(question) {
+          if (this.isGenerating) return;
+          this.isGenerating = true;
+
+          this.addUserMessage(question);
+          this.addResetButton();
+          this.showTypingIndicator();
+
+          await new Promise(resolve => setTimeout(resolve, 800));
+
+          try {
+            // Normalize full-width digits to half-width for parsing
+            let normalizedQuery = question.replace(/[\uFF10-\uFF19]/g, function(s) {
+              return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
+            });
+
+            // Match pings in user query (e.g. 50坪, 120 坪)
+            const pingMatch = normalizedQuery.match(/(\d+)\s*坪/);
+            if (pingMatch) {
+              this.hideTypingIndicator();
+              const pings = parseInt(pingMatch[1], 10);
+              if (pings > 0) {
+                const lamps = pings; // 1 lamp per ping
+                const rate1Year = 1.30;
+                const rate3Year = 1.30;
+                const rate5Year = 1.30; // base daily rate
+                
+                const total1Year = Math.round(lamps * rate1Year * 365);
+                const total3Year = Math.round(lamps * rate3Year * 1095);
+                const total5Year = Math.round(lamps * rate5Year * 1825);
+                
+                const formatNum = (num) => num.toLocaleString('zh-TW');
+
+                const calcAnswer = `
+                  <strong>📊 燈具租賃費用試算報告 (${pings} 坪)</strong><br><br>
+                  此報告依據 <strong>CNS 12112 國家照度標準</strong>及照明設計經驗，以<strong>每 1 坪配置 1 盞高效能 LED 平板燈</strong>為基準進行初步估算（若採用其他燈具型號，配置數據將有所不同）：
+                  <br><br>
+                  <ul>
+                    <li><strong>預估配置燈具</strong>：共 <strong>${lamps} 盞</strong> 高效能 LED 平板燈。</li>
+                    <li><strong>初期建置費用</strong>：由金鍏全額出資（包含採購、配線施工與舊燈具拆除），企業初期負擔為 <strong>0 元</strong>（CAPEX 零支出）。</li>
+                  </ul>
+                  
+                  <strong>🏢 租賃方案費用明細（含稅）：</strong>
+                  <table style="width:100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 15px; font-size: 13px; border: 1px solid rgba(15, 23, 42, 0.08); border-radius: 8px; overflow: hidden; background: rgba(255, 255, 255, 0.5);">
+                    <thead>
+                      <tr style="background-color: rgba(15, 23, 42, 0.03); border-bottom: 1px solid rgba(15, 23, 42, 0.08);">
+                        <th style="padding: 8px; text-align: left; font-weight: 700; color: #0f172a;">方案租期</th>
+                        <th style="padding: 8px; text-align: right; font-weight: 700; color: #0f172a;">付費天數</th>
+                        <th style="padding: 8px; text-align: right; font-weight: 700; color: #0f172a;">租金總額</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style="border-bottom: 1px solid rgba(15, 23, 42, 0.05);">
+                        <td style="padding: 8px; color: #334155;">1年租期 (僅對比)</td>
+                        <td style="padding: 8px; text-align: right; color: #475569;">365 天</td>
+                        <td style="padding: 8px; text-align: right; font-weight: 600; color: #334155;">NT$ ${formatNum(total1Year)}</td>
+                      </tr>
+                      <tr style="border-bottom: 1px solid rgba(15, 23, 42, 0.05);">
+                        <td style="padding: 8px; color: #334155;">3年租期 (熱門推薦)</td>
+                        <td style="padding: 8px; text-align: right; color: #475569;">1,095 天</td>
+                        <td style="padding: 8px; text-align: right; font-weight: 600; color: #334155;">NT$ ${formatNum(total3Year)}</td>
+                      </tr>
+                      <tr style="background-color: rgba(202, 138, 4, 0.03);">
+                        <td style="padding: 8px; font-weight: 700; color: #b45309;">✨ 5年租期 (省 16.7%)</td>
+                        <td style="padding: 8px; text-align: right; color: #b45309;">1,825 天</td>
+                        <td style="padding: 8px; text-align: right; font-weight: 700; color: #ca8a04;">NT$ ${formatNum(total5Year)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  
+                  <strong>💡 5年方案特別優惠說明：</strong><br>
+                  合約簽署 5 年，加碼<strong>免費贈送 1 年</strong>（累計可使用 6 年），平均下來每盞燈每日租金僅攤提約 <strong>NT$ 1.08</strong> 元！
+                  <br><br>
+                  <strong>⚠️ 備註說明：</strong><br>
+                  此試算結果與配置數量<strong>僅供初步參考</strong>。實際合適的配置方案、燈具型號與精確費用，仍須以雙方詳細洽談，並提供場地平面圖進行實際 <strong>DIALux 3D 照度模擬規劃</strong>後之提案為主。
+                  <br><br>
+                  <strong>📝 下一步建議：</strong><br>
+                  若您有現場平面圖與照片，建議您直接點此 <a href="https://www.goldenwayled.com/product_d.php?lang=tw&tb=1&id=1126" style="color: #2563eb; text-decoration: underline;" target="_blank">填寫線上評估表單${linkIconSvg}</a>，我們的工程師會協助為您的場地進行照度模擬與配光規劃，精確設計符合國家標準的最佳燈配置。
+                `;
+                this.addBotMessage(calcAnswer);
+                this.isGenerating = false;
+                this.addSuggestionChips();
+                return;
+              }
+            }
+
+            if (this.apiKey) {
+              const responseText = await queryGeminiAPI(this.apiKey, question, this.chatHistory);
+              this.hideTypingIndicator();
+              
+              let formattedText = this.escapeHTML(responseText)
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\[線上專案評估申請表單\]/g, `<a href="https://www.goldenwayled.com/product_d.php?lang=tw&tb=1&id=1126" style="color: #2563eb; text-decoration: underline;" target="_blank">線上專案評估表單${linkIconSvg}</a>`)
+                .replace(/\[線上評估表單\]/g, `<a href="https://www.goldenwayled.com/product_d.php?lang=tw&tb=1&id=1126" style="color: #2563eb; text-decoration: underline;" target="_blank">線上專案評估表單${linkIconSvg}</a>`);
+
+              this.addBotMessage(formattedText);
+            } else {
+              this.hideTypingIndicator();
+              
+              let matchedFAQ = null;
+              const query = question.toLowerCase();
+
+              for (const item of FAQ_DATABASE) {
+                const match = item.keywords.some(keyword => query.includes(keyword));
+                if (match) {
+                  matchedFAQ = item;
+                  break;
+                }
+              }
+
+              if (matchedFAQ) {
+                const answer = `<strong>${matchedFAQ.title}</strong><br><br>${matchedFAQ.content}`;
+                this.addBotMessage(answer);
+              } else {
+                const fallbackAnswer = `
+                  抱歉，關於您詢問的「<strong>${this.escapeHTML(question)}</strong>」細節，我目前沒有在官方問答庫中找到對應資料。
+                  <br><br>
+                  為了提供您最精準的規劃建議，建議您直接 <strong><a href="https://www.goldenwayled.com/product_d.php?lang=tw&tb=1&id=1126" style="color: #2563eb; text-decoration: underline;" target="_blank">點此填寫線上申請表單${linkIconSvg}</a></strong>，提供您的聯絡資訊與規格坪數，我們的專案人員將會與您聯繫對接，協助進行後續照度規劃評估。
+                  <br><br>
+                  您也可以點擊下方熱門問題了解照明以租代買的核心效益與保固細節！
+                `;
+                this.addBotMessage(fallbackAnswer);
+              }
+            }
+          } catch (err) {
+            console.error(err);
+            this.hideTypingIndicator();
+            this.addBotMessage(`⚠️ 系統發生錯誤：${err.message || '無法取得回應'}。請檢查您的 API 金鑰設定是否正確。`);
+          } finally {
+            this.isGenerating = false;
+            this.addSuggestionChips();
+          }
+        }
+      }
+
+      // Initialize
+      document.addEventListener('DOMContentLoaded', () => new GWAIAssistant());
+    })();
+  </script>
+</body>
+</html>
