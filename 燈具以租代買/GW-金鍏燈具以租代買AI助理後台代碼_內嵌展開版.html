@@ -1,0 +1,113 @@
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=Noto+Sans+TC:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style type="text/css">
+  /* 區塊根節點 */
+  #GW-金鍏燈具以租代買AI助理-Root {
+    position: relative;
+    font-family: 'Hanken Grotesk', 'Noto Sans TC', sans-serif !important;
+    width: 100%;
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 15px;
+    box-sizing: border-box;
+  }
+
+  /* 展開收合的標題按鈕 */
+  #GW-金鍏燈具以租代買AI助理-AccordionHeader {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(202, 138, 4, 0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    transition: all 0.3s ease;
+  }
+  #GW-金鍏燈具以租代買AI助理-AccordionHeader:hover {
+    border-color: rgba(202, 138, 4, 0.6);
+    box-shadow: 0 6px 16px rgba(202, 138, 4, 0.08);
+  }
+  
+  .gw-ai-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .gw-ai-header-sparkle {
+    color: #ca8a04;
+    display: flex;
+    align-items: center;
+  }
+
+  .gw-ai-toggle-arrow {
+    transition: transform 0.3s ease;
+    color: #64748b;
+  }
+  #GW-金鍏燈具以租代買AI助理-Root.open .gw-ai-toggle-arrow {
+    transform: rotate(180deg);
+  }
+
+  /* 內容展開包裝盒 */
+  #GW-金鍏燈具以租代買AI助理-Content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    margin-top: 0;
+  }
+  #GW-金鍏燈具以租代買AI助理-Root.open #GW-金鍏燈具以租代買AI助理-Content {
+    max-height: 720px; /* 容納 iframe 高度 */
+    margin-top: 15px;
+  }
+
+  /* Iframe 邊框與陰影 */
+  #GW-金鍏燈具以租代買AI助理-Content iframe {
+    width: 100%;
+    height: 680px;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    background-color: transparent;
+  }
+</style>
+
+<div id="GW-金鍏燈具以租代買AI助理-Root">
+  <!-- 點擊觸發的標題列 -->
+  <div id="GW-金鍏燈具以租代買AI助理-AccordionHeader">
+    <div class="gw-ai-header-left">
+      <span class="gw-ai-header-sparkle">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+        </svg>
+      </span>
+      <span>💡 金鍏以租代買 - AI 專案助理與費用試算（點選展開對話）</span>
+    </div>
+    <span class="gw-ai-toggle-arrow">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </span>
+  </div>
+
+  <!-- 展開的 Iframe 內容 -->
+  <div id="GW-金鍏燈具以租代買AI助理-Content">
+    <iframe 
+      src="https://tsenwu.github.io/goldenway-ai/燈具以租代買/燈具以租代買AI助理.html" 
+      scrolling="no"
+      loading="lazy">
+    </iframe>
+  </div>
+</div>
+
+<script type="text/javascript">
+  (function() {
+    const root = document.getElementById('GW-金鍏燈具以租代買AI助理-Root');
+    const header = document.getElementById('GW-金鍏燈具以租代買AI助理-AccordionHeader');
+    header.addEventListener('click', function() {
+      root.classList.toggle('open');
+    });
+  })();
+</script>

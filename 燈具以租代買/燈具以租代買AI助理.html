@@ -805,6 +805,8 @@
           this.chatHistory = [];
           this.addBotMessage(getSummaryHTML(), 'summary');
           this.addSuggestionChips();
+          // 確保初始載入或返回摘要時，捲軸置頂，從最開頭的摘要讀起
+          this.chatArea.scrollTop = 0;
         }
 
         addSystemNotice(text) {
